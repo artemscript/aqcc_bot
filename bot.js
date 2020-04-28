@@ -1,12 +1,10 @@
 /* require() will be used to load external npm/node modules. */
-/* source() will be used to load local modules written by Artem Dev for Bok. */
+/* source() will be used to load local modules written by Artem Dev for AQCC Bot. */
 global.source = (name) =>
   require(`${__dirname}/${require('./modules.json')[name]}`)
 global.Discord = require('discord.js')
 global.client = new Discord.Client()
 const config = require('./../config.json')
-
-let recentlyChatted = new Set()
 
 client.on('ready', () => {
   console.log('Running in AQCC!')
