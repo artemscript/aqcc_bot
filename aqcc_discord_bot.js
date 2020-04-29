@@ -22,10 +22,7 @@ client.on('message', (message) => {
 
   // MONITORS ==========
 
-  if (
-    message.channel.id === '704354704691560530' ||
-    message.channel.id === '704686025385050132'
-  ) {
+  if (message.channel.id === '704354704691560530') {
     if (!message.cleanContent) {
       return message
         .reply(

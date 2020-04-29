@@ -56,12 +56,9 @@ client.on('message', (message) => {
         .map((m) => [m.attachments.first().url, m.content.replace(/\\/g, '')])
         .reverse()
     }
-    if (!args[0]) {
-      return message.reply('Provide chat id are args')
-    }
 
     msgs = lots_of_messages_getter(
-      message.guild.channels.resolve(args[0]),
+      message.guild.channels.resolve('704354704691560530'),
       15000
     ).then((msgs) => {
       let stream = fs.createWriteStream('pics_dump_list.txt')

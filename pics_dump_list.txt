@@ -1,3 +1,0 @@
-[https://cdn.discordapp.com/attachments/704354704691560530/704674966926262324/Screenshot_20200428_122348.png,14,m,yellow,orange,blue],
-[https://cdn.discordapp.com/attachments/704354704691560530/704675220463681626/Screenshot_20200428_122420.png,18,m,yellow,orange,blue],
-[https://cdn.discordapp.com/attachments/704354704691560530/704675304924250172/Screenshot_20200428_122451.png,30,m,yellow],
