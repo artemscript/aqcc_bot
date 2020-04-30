@@ -53,7 +53,13 @@ client.on('message', (message) => {
       }
 
       return sum_messages
-        .map((m) => [m.attachments.first().url, m.content.replace(/\\/g, '')])
+        .map((m) => [
+          `"${m.attachments.first().url}"`,
+          m.content
+            .replace(/\\/g, '')
+            .split(',')
+            .map((i) => `"${i}"`),
+        ])
         .reverse()
     }
 

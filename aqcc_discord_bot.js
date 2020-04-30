@@ -207,6 +207,64 @@ client.on('message', (message) => {
     if (command === 'picsmore') {
       message.channel.send('WIP')
     }
+
+    if (command === 'download') {
+      message.reply('DOWNLOADING')
+      async function lots_of_messages_getter(channel, limit) {
+        const sum_messages = []
+        let last_id
+
+        while (true) {
+          console.log('Looping')
+          const options = { limit: 100 }
+          if (last_id) {
+            options.before = last_id
+          }
+
+          const messages = await channel.messages.fetch(options)
+          sum_messages.push(...messages.array())
+          last_id = messages.last().id
+
+          if (messages.size != 100 || sum_messages.length >= limit) {
+            break
+          }
+        }
+
+        return sum_messages
+          .map((m) => [
+            `"${m.attachments.first().url}"`,
+            m.content
+              .replace(/\\/g, '')
+              .split(',')
+              .map((i) => `"${i}"`),
+          ])
+          .reverse()
+      }
+
+      msgs = lots_of_messages_getter(
+        message.guild.channels.resolve('704354704691560530'),
+        15000
+      ).then((msgs) => {
+        let stream = fs.createWriteStream('pics_dump_list.txt')
+        stream.once('open', function (fd) {
+          msgs.forEach((m) => {
+            stream.write(`[${Array.from(m)}],\n`)
+          })
+          stream.end()
+          message.channel.send({
+            files: [
+              {
+                attachment: 'pics_dump_list.txt',
+                name: 'pics_dump_list.txt',
+              },
+            ],
+          })
+        })
+        // msgs.forEach((m) => {
+        //   console.log(m)
+        // })
+      })
+    }
   }
 })
 
