@@ -5,6 +5,7 @@ global.source = (name) =>
 global.Discord = require('discord.js')
 global.client = new Discord.Client()
 const config = require('./../config.json')
+const fs = require('fs')
 
 client.on('ready', () => {
   console.log('Running in AQCC!')
@@ -182,7 +183,7 @@ client.on('message', (message) => {
     }
   }
 
-  if (!message.channel.id === '704354704691560530') {
+  if (message.channel.id != '704354704691560530') {
     // COMMANDS ========
 
     // PREFIX
