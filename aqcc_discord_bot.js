@@ -23,6 +23,69 @@ client.on('message', (message) => {
 
   // MONITORS ==========
 
+  if (message.channel.id === '711036822163161091') {
+    if (!message.cleanContent) {
+      return message
+        .reply(
+          '❌Text `id,m|f,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    const args = message.cleanContent
+      .replace(/ /g, '')
+      .split(',')
+      .filter((i) => i)
+
+    let id = null
+    try {
+      id = parseInt(args[0])
+    } catch (e) {
+      console.log(e)
+      return message.reply('❌Text `id` is missing or erronous.').then((m) => {
+        m.delete({ timeout: 30000 })
+        message.delete({ timeout: 30000 })
+      })
+    }
+
+    if (isNaN(id) || id <= 0 || id >= 10000) {
+      return message
+        .reply(
+          "❌`id` must be a valid **ID** from the item list. Please check you're entiering the right value."
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    if (!parseInt(message.attachments.size) == 1) {
+      console.log(parseInt(message.attachments.size) === 1)
+      return message
+        .reply(
+          '❌Either no pictures were submitted or more than one. Type `?pics` to see how to add pics.'
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    if (!message.attachments.first().url.endsWith('.png')) {
+      return message
+        .reply(
+          "❌Pictures are only accepted in `.png` format. Things like `.jpg` or `.PNG` will not be accepted. Type `?picsmore` to see how to add pics with the correct format, especially if you're on mobile."
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+  }
+
   if (message.channel.id === '704354704691560530') {
     if (!message.cleanContent) {
       return message
@@ -257,6 +320,30 @@ client.on('message', (message) => {
               {
                 attachment: 'pics_dump_list.txt',
                 name: 'pics_dump_list.txt',
+              },
+            ],
+          })
+        })
+        // msgs.forEach((m) => {
+        //   console.log(m)
+        // })
+      })
+
+      f_msgs = lots_of_messages_getter(
+        message.guild.channels.resolve('711036822163161091'),
+        15000
+      ).then((msgs) => {
+        let stream = fs.createWriteStream('pics_dump_list_f.txt')
+        stream.once('open', function (fd) {
+          msgs.forEach((m) => {
+            stream.write(`[${Array.from(m)}],\n`)
+          })
+          stream.end()
+          message.channel.send({
+            files: [
+              {
+                attachment: 'pics_dump_list_f.txt',
+                name: 'pics_dump_list_f.txt',
               },
             ],
           })
