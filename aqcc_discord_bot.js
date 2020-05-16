@@ -309,7 +309,7 @@ client.on('message', (message) => {
         message.guild.channels.resolve('704354704691560530'),
         15000
       ).then((msgs) => {
-        let stream = fs.createWriteStream('pics_dump_list.txt')
+        let stream = fs.createWriteStream('../pics_dump_list.txt')
         stream.once('open', function (fd) {
           msgs.forEach((m) => {
             stream.write(`[${Array.from(m)}],\n`)
@@ -318,7 +318,7 @@ client.on('message', (message) => {
           message.channel.send({
             files: [
               {
-                attachment: 'pics_dump_list.txt',
+                attachment: '../pics_dump_list.txt',
                 name: 'pics_dump_list.txt',
               },
             ],
@@ -333,7 +333,7 @@ client.on('message', (message) => {
         message.guild.channels.resolve('711036822163161091'),
         15000
       ).then((msgs) => {
-        let stream = fs.createWriteStream('pics_dump_list_f.txt')
+        let stream = fs.createWriteStream('../pics_dump_list_f.txt')
         stream.once('open', function (fd) {
           msgs.forEach((m) => {
             stream.write(`[${Array.from(m)}],\n`)
@@ -342,7 +342,7 @@ client.on('message', (message) => {
           message.channel.send({
             files: [
               {
-                attachment: 'pics_dump_list_f.txt',
+                attachment: '../pics_dump_list_f.txt',
                 name: 'pics_dump_list_f.txt',
               },
             ],
