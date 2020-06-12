@@ -23,6 +23,103 @@ client.on('message', (message) => {
 
   // MONITORS ==========
 
+  // FIX COLOURS CHAT
+  if (message.channel.id === '720967774431870976') {
+    if (!message.cleanContent) {
+      return message
+        .reply(
+          '❌Text `id,m|f,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    const args = message.cleanContent
+      .replace(/ /g, '')
+      .split(',')
+      .filter((i) => i)
+
+    let id = null
+    let colours = null
+    try {
+      id = parseInt(args[0])
+      colours = args
+      colours.shift()
+    } catch (e) {
+      console.log(e)
+      return message
+        .reply(
+          '❌Text `id,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    if (isNaN(id) || id <= 0 || id >= 10000) {
+      return message
+        .reply(
+          "❌`id` must be a valid **ID** from the item list. Please check you're entiering the right value."
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    if (!colours) {
+      return message
+        .reply(
+          '❌Colours in to be provied as a list `colour,colour2,...`. You can enter between 1 and 5 colours. To see the colours list, type `?colours`.'
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    if (colours.length < 1 || colours.length > 5) {
+      return message
+        .reply(
+          '❌Colours in to be provied as a list `colour,colour2,...`. You can enter between 1 and 5 colours. To see the colours list, type `?colours`.'
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
+    if (
+      !colours.every((c) =>
+        [
+          'black',
+          'white',
+          'grey',
+          'brown',
+          'purple',
+          'yellow',
+          'blue',
+          'orange',
+          'green',
+          'red',
+          'all',
+        ].includes(c)
+      )
+    ) {
+      return message
+        .reply(
+          '❌One of the colours are invalid. Possible colours are `black,white,grey,brown,purple,yellow,blue,orange,green,red,all`. To see the colours list again, type `?colours`.'
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+  }
+
   if (message.channel.id === '711036822163161091') {
     if (!message.cleanContent) {
       return message
@@ -274,7 +371,7 @@ client.on('message', (message) => {
 
     if (command === 'download') {
       message.reply('DOWNLOADING')
-      async function lots_of_messages_getter(channel, limit) {
+      async function lots_of_messages_getter(channel, limit, cols) {
         const sum_messages = []
         let last_id
 
@@ -294,6 +391,24 @@ client.on('message', (message) => {
           }
         }
 
+        if (cols) {
+          return sum_messages
+            .map((m) => [
+              m.content
+                .replace(/\\/g, '')
+                .split(',')
+                .map((i) => `"${i}"`)[0],
+              `[` +
+                m.content
+                  .replace(/\\/g, '')
+                  .split(',')
+                  .map((i) => `"${i}"`)
+                  .slice(1) +
+                `]`,
+            ])
+            .reverse()
+        }
+
         return sum_messages
           .map((m) => [
             `"${m.attachments.first().url}"`,
@@ -305,7 +420,7 @@ client.on('message', (message) => {
           .reverse()
       }
 
-      msgs = lots_of_messages_getter(
+      lots_of_messages_getter(
         message.guild.channels.resolve('704354704691560530'),
         15000
       ).then((msgs) => {
@@ -329,7 +444,7 @@ client.on('message', (message) => {
         // })
       })
 
-      f_msgs = lots_of_messages_getter(
+      lots_of_messages_getter(
         message.guild.channels.resolve('711036822163161091'),
         15000
       ).then((msgs) => {
@@ -348,9 +463,28 @@ client.on('message', (message) => {
             ],
           })
         })
-        // msgs.forEach((m) => {
-        //   console.log(m)
-        // })
+      })
+
+      lots_of_messages_getter(
+        message.guild.channels.resolve('720967774431870976'),
+        15000,
+        true
+      ).then((msgs) => {
+        let stream = fs.createWriteStream('../pics_dump_list_fix.txt')
+        stream.once('open', function (fd) {
+          msgs.forEach((m) => {
+            stream.write(`[${Array.from(m)}],\n`)
+          })
+          stream.end()
+          message.channel.send({
+            files: [
+              {
+                attachment: '../pics_dump_list_fix.txt',
+                name: 'pics_dump_list_fix.txt',
+              },
+            ],
+          })
+        })
       })
     }
   }
