@@ -9,9 +9,9 @@ const fs = require('fs')
 
 client.on('ready', () => {
   console.log('Running in AQCC!')
-  client.user.setActivity('AQCC ppl 😳', { type: 'WATCHING' })
-  client.channels.fetch('704686025385050132').then((ch) => {
-    ch.send(`Running!`)
+  client.user.setActivity('AQCC', { type: 'WATCHING' })
+  client.channels.fetch(config.admin_chat).then((channel) => {
+    channel.send(`Running!`)
   })
 })
 
@@ -19,16 +19,17 @@ client.on('message', (message) => {
   // NO REPLY TO BOT
   if (message.author.bot) return
   // ONLY AQCC
-  if (message.guild.id !== '604199269716459530') return
+  if (message.guild.id !== config.guild) return
 
   // MONITORS ==========
 
   // FIX COLOURS CHAT
-  if (message.channel.id === '720967774431870976') {
+  if (message.channel.id === config.colour_chat) {
+    // Should have something written
     if (!message.cleanContent) {
       return message
         .reply(
-          '❌Text `id,m|f,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
+          '❌Text `id,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
         )
         .then((m) => {
           m.delete({ timeout: 30000 })
@@ -36,6 +37,7 @@ client.on('message', (message) => {
         })
     }
 
+    // split arg string and remove null elements
     const args = message.cleanContent
       .replace(/ /g, '')
       .split(',')
@@ -48,7 +50,6 @@ client.on('message', (message) => {
       colours = args
       colours.shift()
     } catch (e) {
-      console.log(e)
       return message
         .reply(
           '❌Text `id,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
@@ -120,11 +121,11 @@ client.on('message', (message) => {
     }
   }
 
-  if (message.channel.id === '711036822163161091') {
+  if (message.channel.id === config.female_chat) {
     if (!message.cleanContent) {
       return message
         .reply(
-          '❌Text `id,m|f,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
+          '❌Text `id,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
         )
         .then((m) => {
           m.delete({ timeout: 30000 })
@@ -141,7 +142,6 @@ client.on('message', (message) => {
     try {
       id = parseInt(args[0])
     } catch (e) {
-      console.log(e)
       return message.reply('❌Text `id` is missing or erronous.').then((m) => {
         m.delete({ timeout: 30000 })
         message.delete({ timeout: 30000 })
@@ -159,8 +159,18 @@ client.on('message', (message) => {
         })
     }
 
+    if (!config.ndone_f.includes(id)) {
+      return message
+        .reply(
+          `❌It seems this pictures for this gender has already been taken. Please look at what's left in the lists in the #links chat.`
+        )
+        .then((m) => {
+          m.delete({ timeout: 30000 })
+          message.delete({ timeout: 30000 })
+        })
+    }
+
     if (!parseInt(message.attachments.size) == 1) {
-      console.log(parseInt(message.attachments.size) === 1)
       return message
         .reply(
           '❌Either no pictures were submitted or more than one. Type `?pics` to see how to add pics.'
@@ -183,11 +193,11 @@ client.on('message', (message) => {
     }
   }
 
-  if (message.channel.id === '704354704691560530') {
+  if (message.channel.id === config.male_chat) {
     if (!message.cleanContent) {
       return message
         .reply(
-          '❌Text `id,m|f,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
+          '❌Text `id,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
         )
         .then((m) => {
           m.delete({ timeout: 30000 })
@@ -201,19 +211,15 @@ client.on('message', (message) => {
       .filter((i) => i)
 
     let id = null
-    let gender = null
     let colours = null
     try {
       id = parseInt(args[0])
-      gender = args[1].toString().toLowerCase()
       colours = args
       colours.shift()
-      colours.shift()
     } catch (e) {
-      console.log(e)
       return message
         .reply(
-          '❌Text `id,m|f,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
+          '❌Text `id,colour,colour2,...` is missing or erronous. Type `?text` to see what to write when adding pics.'
         )
         .then((m) => {
           m.delete({ timeout: 30000 })
@@ -232,21 +238,7 @@ client.on('message', (message) => {
         })
     }
 
-    if (gender != 'm' && gender != 'f') {
-      return message
-        .reply(
-          '❌`m|f` must be a valid gender **CHARACTER**. Its either `m` for **MALE**, or `f` for **FEMALE**.'
-        )
-        .then((m) => {
-          m.delete({ timeout: 30000 })
-          message.delete({ timeout: 30000 })
-        })
-    }
-
-    if (
-      (gender == 'm' && !config.ndone_m.includes(id)) ||
-      (gender == 'f' && !config.ndone_f.includes(id))
-    ) {
+    if (!config.ndone_m.includes(id)) {
       return message
         .reply(
           `❌It seems this pictures for this gender has already been taken. Please look at what's left in the lists in the #links chat.`
@@ -267,8 +259,6 @@ client.on('message', (message) => {
           message.delete({ timeout: 30000 })
         })
     }
-
-    console.log(colours.length)
 
     if (colours.length < 1 || colours.length > 5) {
       return message
@@ -343,7 +333,7 @@ client.on('message', (message) => {
     }
   }
 
-  if (message.channel.id != '704354704691560530') {
+  if (message.channel.id === config.admin_chat) {
     // COMMANDS ========
 
     // PREFIX
@@ -421,7 +411,7 @@ client.on('message', (message) => {
       }
 
       lots_of_messages_getter(
-        message.guild.channels.resolve('704354704691560530'),
+        message.guild.channels.resolve(config.male_chat),
         15000
       ).then((msgs) => {
         let stream = fs.createWriteStream('../pics_dump_list.txt')
@@ -445,7 +435,7 @@ client.on('message', (message) => {
       })
 
       lots_of_messages_getter(
-        message.guild.channels.resolve('711036822163161091'),
+        message.guild.channels.resolve(config.female_chat),
         15000
       ).then((msgs) => {
         let stream = fs.createWriteStream('../pics_dump_list_f.txt')
@@ -466,7 +456,7 @@ client.on('message', (message) => {
       })
 
       lots_of_messages_getter(
-        message.guild.channels.resolve('720967774431870976'),
+        message.guild.channels.resolve(config.colour_chat),
         15000,
         true
       ).then((msgs) => {
@@ -495,13 +485,11 @@ process.on('unhandledRejection', (err) => {
 })
 
 client.on('guildMemberAdd', (member) => {
-  client.channels.fetch('604199269716459532').then((ch) => {
-    ch.send(
+  client.channels.fetch(config.main_chat).then((channel) => {
+    channel.send(
       `Welcome to the AQCC server, ${member}. If you're here to help or mention any issues, @tag Droux!`
     )
   })
 })
-
-// client.on('guildMemberRemove', (member) => {})
 
 client.login(config.token)
